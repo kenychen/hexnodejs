@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>JS Bin</title>
+</head>
+
+<body>
+    <select id="orderItem">
+        <option value="weight" selected>體重排序</option>
+        <option value="age">年齡排序</option>
+        <option value="height">身高排序</option>
+    </select>
+    <ul id='list'>
+
+    </ul>
+
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js">
+    </script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyDx9Qnl6SJbuQ3nhyGFLY09htU1nXbB0iM",
+            authDomain: "chatlive-e3353.firebaseapp.com",
+            databaseURL: "https://chatlive-e3353.firebaseio.com",
+            projectId: "chatlive-e3353",
+            storageBucket: "chatlive-e3353.appspot.com",
+            messagingSenderId: "179069860232"
+        };
+        firebase.initializeApp(config);
+        var data = {
+            "father": {
+                "title": "father",
+                "age": 44,
+                "weight": 88,
+                "height": 178
+            },
+            "mom": {
+                "title": "mom",
+                "age": 42,
+                "weight": 66,
+                "height": 166
+            },
+            "son": {
+                "title": "son",
+                "age": 13,
+                "weight": 40,
+                "height": 133
+            },
+            "daughter": {
+                "title": "daughter",
+                "age": 8,
+                "weight": 35,
+                "height": 110
+            }
+        }
+        //寫入資料
+        firebase.database().ref("family").set(data);
+        //取得firebase ref
+        var familyRef = firebase.database().ref("family");
+        //取得html物件
+        var orderItem = document.getElementById('orderItem');
+        var list = document.getElementById('list');
+
+        //監聽事件,依選單內容做排序
+        orderItem.addEventListener('change', function (e) {
+            processOrder();
+        });
+
+        function processOrder() {
+            var str = '';
+            familyRef.orderByChild(orderItem.value).once('value', function (snapshot) {
+                snapshot.forEach(function (item) {
+                    //console.log(item);
+                    str += '<li>' + item.key + ':' + item.val()[orderItem.value] + '</li>';
+                });
+                list.innerHTML = str;
+            });
+
+        }
+
+        processOrder();
+    </script>
+</body>
+
+</html>
